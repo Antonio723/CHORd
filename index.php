@@ -48,7 +48,7 @@ if (!empty($_POST['acao'])) {
 
 
 require("database/conexao.php");
-$sql = "SELECT * FROM chord.boss;";
+$sql = "SELECT * FROM chord.boss b where b.saida > curdate()-2 or b.saida is null order by b.saida asc";
 $result = mysqli_query($conexao, $sql) or die(mysqli_error($conexao));
 
 ?>
