@@ -1,0 +1,44 @@
+form{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 50px 80px 50px 80px;
+    margin: 20px 20px 0px 20px;
+    flex-wrap: wrap;
+
+    gap: 20px;
+    
+    background-color: #606060;
+    border-radius: 15px;
+}
+
+form:last-child{
+    flex-basis: 100%;
+}
+
+input{
+    width: 300px;
+    border-radius:20px;
+    border: 1px solid #606060;
+    padding: 10px;
+    margin: 10px;
+    padding-left: 20px;
+}
+
+
+button{
+    width: 150px;
+    border-radius:20px;
+    border: 1px solid #202020;
+    background-color: #AECAAD;
+    padding: 10px;
+    padding-left: 20px;
+
+    align-self: center;
+
+    
+}
+
+button:hover{
+    background-color: #6bb969;
+}

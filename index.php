@@ -17,7 +17,6 @@
 date_default_timezone_set('America/Sao_Paulo');
 
 if (!empty($_POST['acao'])) {
-    echo $_POST['acao'];
     switch ($_POST['acao']) {
 
         case ("cadastrar"):
@@ -73,7 +72,7 @@ $result = mysqli_query($conexao, $sql) or die(mysqli_error($conexao));
             <input type="text" name="destino" placeholder="destino">
             <input type="text" name="modelo" placeholder="modelo">
             <input type="text" name="placa" placeholder="placa">
-            <input type="number" name="cracha" placeholder="cracha">
+            <input type="number" name="cracha" placeholder="cracha" class="cracha">
             <button>Enviar</button>
         </form>
     </section>
