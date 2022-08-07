@@ -12,35 +12,37 @@
 </head>
 
 <?php
-echo print_r($_POST);
+// echo print_r($_POST);
 
-// if(!empty($_POST['acao'])){
-//     switch ($_POST['acao']) {
-    
-//         case ("cadastrar"):
-//             if (empty(validarCampos())) {
-//                 cadastrar();
-//             } else {
-//                 echo "Preencha todos os campos";
-//             }
-//             break;
-//         case("saida"):
-//             registrarSaida();
-//             break;
-//         case("editar"):
-            
-    
-//             break;
-//     };
-// }
+date_default_timezone_set('America/Sao_Paulo');
+
+if (!empty($_POST['acao'])) {
+    echo $_POST['acao'];
+    switch ($_POST['acao']) {
+
+        case ("cadastrar"):
+            if (empty(validarCampos())) {
+                cadastrar();
+            } else {
+                echo "Preencha todos os campos";
+            }
+            break;
+        case ("saida"):
+            registrarSaida();
+            break;
+        case ("editar"):
+
+
+            break;
+    };
+}
 
 
 /* TODO LIST
-    * Campos entrada e saida de maneira automatica pelo formulario
-    * Criação do formulario
-    * Edição dos campos do formulario
+    * Edição dos campos do formulario ("POde  ser feito atravase de uma consulta com o bossId, e logo apos a execução de um script para preencher os campos)")
     * Mensagens de erros
-
+    * Não permitir o cadastro se o crachá já estiver sendo usado
+    * 
 */
 
 
@@ -65,14 +67,13 @@ $result = mysqli_query($conexao, $sql) or die(mysqli_error($conexao));
     </div>
     <section id="form">
         <form action="index.php" method="POST" autocomplete="off">
+            <input type="hidden" name="acao" value="cadastrar" />
             <input type="text" name="nome" placeholder="nome">
             <input type="text" name="documento" placeholder="documento">
             <input type="text" name="destino" placeholder="destino">
             <input type="text" name="modelo" placeholder="modelo">
             <input type="text" name="placa" placeholder="placa">
-            <input type="text" name="cracha" placeholder="cracha">
-            <input type="text" name="entrada" placeholder="cracha">
-            <input type="text" name="saida" placeholder="cracha">
+            <input type="number" name="cracha" placeholder="cracha">
             <button>Enviar</button>
         </form>
     </section>
@@ -88,7 +89,7 @@ $result = mysqli_query($conexao, $sql) or die(mysqli_error($conexao));
                     <td class="table_tile">Entrada</td>
                     <td class="table_tile">Saida</td>
                     <td class="table_tile">Cracha</td>
-                    <td class="table_tile"></td>
+                    <td class="table_tile"></td> <!--//TODO: Editar -->
                 </tr>
             </thead>
             <tbody>
@@ -120,12 +121,12 @@ $result = mysqli_query($conexao, $sql) or die(mysqli_error($conexao));
                             ?>
                         </td>
                         <td><?= $lista["cracha"] ?></td>
-                        <td>
+                        <!-- <td> //TODO: Editar 
                             <img class="imagem-produto" onclick="editar(<?= $lista['id'] ?>)" src="https://icons.veryicon.com/png/o/application/enterprise-edition/edit-53.png" width="30px" />
-                        </td>
+                        </td> -->
                         <form id="form-editar" method="POST" action="index.php">
                             <input type="hidden" name="acao" value="editar" />
-                            <input type="hidden" id="bossId" name="idBoss" value=""/>
+                            <input type="hidden" id="bossId" name="idBoss" value="" />
                         </form>
                         <form id="form-saida" method="POST" action="index.php">
                             <input type="hidden" name="acao" value="saida" />
@@ -188,7 +189,8 @@ function cadastrar()
     mysqli_close($conexao);
 }
 
-function editar(){
+function editar()
+{
     require("database/conexao.php");
     $id = $_POST["idBoss"];
     $nome = $_POST["nome"];
