@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -11,26 +12,42 @@
 </head>
 
 <?php
-require("database/conexao.php");
+echo print_r($_POST);
 
-$sql = "SELECT * FROM chord.boss;";
-$result = mysqli_query($conexao, $sql) or die(mysqli_error($conexao));
+// if(!empty($_POST['acao'])){
+//     switch ($_POST['acao']) {
+    
+//         case ("cadastrar"):
+//             if (empty(validarCampos())) {
+//                 cadastrar();
+//             } else {
+//                 echo "Preencha todos os campos";
+//             }
+//             break;
+//         case("saida"):
+//             registrarSaida();
+//             break;
+//         case("editar"):
+            
+    
+//             break;
+//     };
+// }
 
-echo var_dump($_POST);
 
 /* TODO LIST
-    * Entrada e saida de maneira automatica
+    * Campos entrada e saida de maneira automatica pelo formulario
     * Criação do formulario
     * Edição dos campos do formulario
     * Mensagens de erros
 
 */
 
-if(empty(validarCampos())){
-    cadastrar();
-}else{
-    echo "Preencha todos os campos";
-}
+
+
+require("database/conexao.php");
+$sql = "SELECT * FROM chord.boss;";
+$result = mysqli_query($conexao, $sql) or die(mysqli_error($conexao));
 
 ?>
 
@@ -54,6 +71,8 @@ if(empty(validarCampos())){
             <input type="text" name="modelo" placeholder="modelo">
             <input type="text" name="placa" placeholder="placa">
             <input type="text" name="cracha" placeholder="cracha">
+            <input type="text" name="entrada" placeholder="cracha">
+            <input type="text" name="saida" placeholder="cracha">
             <button>Enviar</button>
         </form>
     </section>
@@ -88,24 +107,29 @@ if(empty(validarCampos())){
                             ) ?>
                         </td>
                         <td>
-                            <? 
-                                echo "20000000000";
-                                if (empty($lista["saida"])){
-                                    echo "Ainda não saiu"; //TODO: Implementar botão de saida
-                                    
-                                }else{
-                                    echo date_format(new DateTime($lista["saida"]),'d/m G:i');
-                                }
+                            <?php
+                            if (empty($lista["saida"])) {
 
-                             ?>
+                            ?>
+                                <img class="imagem-produto" onclick="registrarSaida(<?= $lista['id'] ?>) " src="https://icons.veryicon.com/png/o/application/4px-heavy-line-icon/time-22.png" width="30px" />
+                            <?php
+                            } else {
+                                echo date_format(new DateTime($lista["saida"]), 'd/m G:i');
+                            }
+
+                            ?>
                         </td>
                         <td><?= $lista["cracha"] ?></td>
                         <td>
-                            <img class="imagem-produto" onclick="deletar(<?= $lista['id'] ?>)" src="https://icons.veryicon.com/png/o/application/enterprise-edition/edit-53.png" width="30px" />
+                            <img class="imagem-produto" onclick="editar(<?= $lista['id'] ?>)" src="https://icons.veryicon.com/png/o/application/enterprise-edition/edit-53.png" width="30px" />
                         </td>
                         <form id="form-editar" method="POST" action="index.php">
                             <input type="hidden" name="acao" value="editar" />
-                            <input type="hidden" id="bossId" name="idBoss" value="" />
+                            <input type="hidden" id="bossId" name="idBoss" value=""/>
+                        </form>
+                        <form id="form-saida" method="POST" action="index.php">
+                            <input type="hidden" name="acao" value="saida" />
+                            <input type="hidden" id="bossIdExit" name="idBoss" value="" />
                         </form>
                     </tr>
                 <?php
@@ -116,54 +140,77 @@ if(empty(validarCampos())){
     </section>
 </body>
 <script lang="javascript">
-    function deletar(categoriaId) {
+    function editar(categoriaId) {
         document.querySelector("#bossId").value = categoriaId;
-
         document.querySelector("#form-editar").submit();
+    }
+
+    function registrarSaida(categoriaId, dados) {
+        document.querySelector("#bossIdExit").value = categoriaId;
+        document.querySelector("#form-saida").submit();
     }
 </script>
 
 </html>
 
 <?php
-    function validarCampos(){
-        $erros = "";
-        if (empty($_POST["nome"]))
-            $erros = "Preencha o campo nome";
-        if (empty($_POST["documento"]))
-            $erros = "Preencha o campo documento";
-        if (empty($_POST["destino"])) 
-            $erros = "Preencha o campo destino";
-        if (empty($_POST["modelo"]))
-            $erros = "Preencha o campo modelo";
-        if (empty($_POST["placa"]))
-            $erros = "Preencha o campo placa";
-        if (empty($_POST["cracha"]))
-            $erros = "Preencha o campo cracha";
-        return $erros;
-    }
+function validarCampos()
+{
+    $erros = "";
+    if (empty($_POST["nome"]))
+        $erros = "Preencha o campo nome";
+    if (empty($_POST["documento"]))
+        $erros = "Preencha o campo documento";
+    if (empty($_POST["destino"]))
+        $erros = "Preencha o campo destino";
+    if (empty($_POST["modelo"]))
+        $erros = "Preencha o campo modelo";
+    if (empty($_POST["placa"]))
+        $erros = "Preencha o campo placa";
+    if (empty($_POST["cracha"]))
+        $erros = "Preencha o campo cracha";
+    return $erros;
+}
 
-    function cadastrar(){
-        require("database/conexao.php");
-        //FUNÇÃO PARA CADASTRAR OS DADOS DO BOSS
-        $nome = $_POST["nome"];
-        $documento = $_POST["documento"];
-        $destino = $_POST["destino"];
-        $modelo = $_POST["modelo"];
-        $placa = $_POST["placa"];
-        $cracha = $_POST["cracha"];
-        $entrada = date("Y-m-d H:i:s");
-        $saida = "";
-        $sql = "INSERT INTO boss (nome, documento, destino, modelo, placa, cracha, entrada, saida) VALUES ('$nome', '$documento', '$destino', '$modelo', '$placa', '$cracha', '$entrada', '$saida');";
-        $result = mysqli_query($conexao, $sql) or die(mysqli_error($conexao));
-        mysqli_close($conexao);
-    }
+function cadastrar()
+{
+    require("database/conexao.php");
+    //FUNÇÃO PARA CADASTRAR OS DADOS DO BOSS
+    $nome = $_POST["nome"];
+    $documento = $_POST["documento"];
+    $destino = $_POST["destino"];
+    $modelo = $_POST["modelo"];
+    $placa = $_POST["placa"];
+    $cracha = $_POST["cracha"];
+    $entrada = date("Y-m-d H:i:s");
+    $sql = "INSERT INTO boss (nome, documento, destino, modelo, placa, cracha, entrada) VALUES ('$nome', '$documento', '$destino', '$modelo', '$placa', '$cracha', '$entrada')";
+    $result = mysqli_query($conexao, $sql) or die(mysqli_error($conexao));
+    mysqli_close($conexao);
+}
 
-    function editar(){
+function editar(){
+    require("database/conexao.php");
+    $id = $_POST["idBoss"];
+    $nome = $_POST["nome"];
+    $documento = $_POST["documento"];
+    $destino = $_POST["destino"];
+    $modelo = $_POST["modelo"];
+    $placa = $_POST["placa"];
+    $cracha = $_POST["cracha"];
+    $sql = "UPDATE boss SET nome = '$nome', documento = '$documento', destino = '$destino', modelo = '$modelo', placa = '$placa', cracha = '$cracha' WHERE id = $id";
+    $result = mysqli_query($conexao, $sql) or die(mysqli_error($conexao));
+    mysqli_close($conexao);
+}
 
-    }
+function registrarSaida()
+{
+    require("database/conexao.php");
+    //FUNÇÃO PARA CADASTRAR OS DADOS DO BOSS
+    $saida = date("Y-m-d H:i:s");
+    $sql = "UPDATE boss SET saida = '$saida' WHERE id = " . $_POST["idBoss"];
+    $result = mysqli_query($conexao, $sql) or die(mysqli_error($conexao));
+    mysqli_close($conexao);
+}
 
-    function registrarSaida(){
 
-    }
 ?>
