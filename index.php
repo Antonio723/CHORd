@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html lang="pt-br">
-
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="css/form.css">
     <link rel="stylesheet" href="css/style.css">
+    <link rel="shortcut icon" href="img/chord icon.png" type="image/x-icon">
     <title>CHORD</title>
 </head>
 
@@ -17,6 +17,20 @@ $sql = "SELECT * FROM chord.boss;";
 $result = mysqli_query($conexao, $sql) or die(mysqli_error($conexao));
 
 echo var_dump($_POST);
+
+/* TODO LIST
+    * Entrada e saida de maneira automatica
+    * Criação do formulario
+    * Edição dos campos do formulario
+    * Mensagens de erros
+
+*/
+
+if(empty(validarCampos())){
+    cadastrar();
+}else{
+    echo "Preencha todos os campos";
+}
 
 ?>
 
@@ -33,8 +47,14 @@ echo var_dump($_POST);
         <!-- Será implementado futuramente o menu com demais finalidades-->
     </div>
     <section id="form">
-        <form action="acoes.php">
-            <input type="text" placeholder="nome">
+        <form action="index.php" method="POST" autocomplete="off">
+            <input type="text" name="nome" placeholder="nome">
+            <input type="text" name="documento" placeholder="documento">
+            <input type="text" name="destino" placeholder="destino">
+            <input type="text" name="modelo" placeholder="modelo">
+            <input type="text" name="placa" placeholder="placa">
+            <input type="text" name="cracha" placeholder="cracha">
+            <button>Enviar</button>
         </form>
     </section>
     <section id="data">
@@ -67,14 +87,21 @@ echo var_dump($_POST);
                                 'd/m G:i'
                             ) ?>
                         </td>
-                        <td><?= date_format(
-                                new DateTime($lista["saida"]),
-                                'd/m G:i'
-                            ) ?>
+                        <td>
+                            <? 
+                                echo "20000000000";
+                                if (empty($lista["saida"])){
+                                    echo "Ainda não saiu"; //TODO: Implementar botão de saida
+                                    
+                                }else{
+                                    echo date_format(new DateTime($lista["saida"]),'d/m G:i');
+                                }
+
+                             ?>
                         </td>
                         <td><?= $lista["cracha"] ?></td>
                         <td>
-                            <img class="imagem-produto" onclick="deletar(<?= $lista['id'] ?>)" src="https://icons.veryicon.com/png/o/construction-tools/coca-design/delete-189.png" width="30px" />
+                            <img class="imagem-produto" onclick="deletar(<?= $lista['id'] ?>)" src="https://icons.veryicon.com/png/o/application/enterprise-edition/edit-53.png" width="30px" />
                         </td>
                         <form id="form-editar" method="POST" action="index.php">
                             <input type="hidden" name="acao" value="editar" />
@@ -97,3 +124,46 @@ echo var_dump($_POST);
 </script>
 
 </html>
+
+<?php
+    function validarCampos(){
+        $erros = "";
+        if (empty($_POST["nome"]))
+            $erros = "Preencha o campo nome";
+        if (empty($_POST["documento"]))
+            $erros = "Preencha o campo documento";
+        if (empty($_POST["destino"])) 
+            $erros = "Preencha o campo destino";
+        if (empty($_POST["modelo"]))
+            $erros = "Preencha o campo modelo";
+        if (empty($_POST["placa"]))
+            $erros = "Preencha o campo placa";
+        if (empty($_POST["cracha"]))
+            $erros = "Preencha o campo cracha";
+        return $erros;
+    }
+
+    function cadastrar(){
+        require("database/conexao.php");
+        //FUNÇÃO PARA CADASTRAR OS DADOS DO BOSS
+        $nome = $_POST["nome"];
+        $documento = $_POST["documento"];
+        $destino = $_POST["destino"];
+        $modelo = $_POST["modelo"];
+        $placa = $_POST["placa"];
+        $cracha = $_POST["cracha"];
+        $entrada = date("Y-m-d H:i:s");
+        $saida = "";
+        $sql = "INSERT INTO boss (nome, documento, destino, modelo, placa, cracha, entrada, saida) VALUES ('$nome', '$documento', '$destino', '$modelo', '$placa', '$cracha', '$entrada', '$saida');";
+        $result = mysqli_query($conexao, $sql) or die(mysqli_error($conexao));
+        mysqli_close($conexao);
+    }
+
+    function editar(){
+
+    }
+
+    function registrarSaida(){
+
+    }
+?>
