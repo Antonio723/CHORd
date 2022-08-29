@@ -3,48 +3,81 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="css/form.css">
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="shortcut icon" href="img/chord icon.png" type="image/x-icon">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Verdana, Geneva, Tahoma, sans-serif;
+        }
+
+        header {
+            background: #09661A;
+            color: #fff;
+            padding: 20px;
+            display: flex;
+            column-gap: 150px;
+            padding: 50px 0px 50px 150px;
+        }
+
+        h4 {
+            font-weight: 400
+        }
+
+        h3 {
+            font-weight: 400
+        }
+
+        #submenu {
+            height: 30px;
+            background-color: #00420C;
+        }
+
+        #data {
+            padding: 30px;
+        }
+
+        table {
+            width: 100%;
+            min-height: 350px;
+            background: #D9D9D9;
+            border-collapse: collapse;
+            border-radius: 30px;
+        }
+
+        thead {
+            height: 60px;
+            background-color: #2D2C2C;
+        }
+
+        thead:first-child td:first-child {
+            border-radius: 30px 0 0 0;
+        }
+
+        thead:first-child td:last-child {
+            border-radius: 0px 30px 0px 0px;
+        }
+
+        thead tr {
+            text-align: center;
+        }
+
+        td {
+            padding: 10px 25px 30px 15px;
+        }
+
+        .table_tile {
+            background-color: #2D2C2C;
+            color: #fff;
+            font-weight: 550;
+            padding: 10px;
+        }
+    </style>
     <title>CHORD</title>
 </head>
 
 <?php
-// echo print_r($_POST);
-
 date_default_timezone_set('America/Sao_Paulo');
-
-if (!empty($_POST['acao'])) {
-    switch ($_POST['acao']) {
-
-        case ("cadastrar"):
-            if (empty(validarCampos())) {
-                cadastrar();
-            } else {
-                echo "Preencha todos os campos";
-            }
-            break;
-        case ("saida"):
-            registrarSaida();
-            break;
-        case ("editar"):
-
-
-            break;
-    };
-}
-
-
-/* TODO LIST
-    * Edição dos campos do formulario ("POde  ser feito atravase de uma consulta com o bossId, e logo apos a execução de um script para preencher os campos)")
-    * Mensagens de erros
-    * Não permitir o cadastro se o crachá já estiver sendo usado
-    * 
-*/
-
-
 
 require("database/conexao.php");
 $sql = "SELECT * FROM chord.boss b where b.saida > curdate()-2 or b.saida is null order by b.saida asc";
@@ -62,20 +95,8 @@ $result = mysqli_query($conexao, $sql) or die(mysqli_error($conexao));
         </div>
     </header>
     <div id="submenu">
-        <!-- Será implementado futuramente o menu com demais finalidades-->
     </div>
-    <section id="form">
-        <form action="index.php" method="POST" autocomplete="off">
-            <input type="hidden" name="acao" value="cadastrar" />
-            <input type="text" name="nome" placeholder="nome">
-            <input type="text" name="documento" placeholder="documento">
-            <input type="text" name="destino" placeholder="destino">
-            <input type="text" name="modelo" placeholder="modelo">
-            <input type="text" name="placa" placeholder="placa">
-            <input type="number" name="cracha" placeholder="cracha" class="cracha">
-            <button>Enviar</button>
-        </form>
-    </section>
+
     <section id="data">
         <table>
             <thead>
@@ -88,7 +109,7 @@ $result = mysqli_query($conexao, $sql) or die(mysqli_error($conexao));
                     <td class="table_tile">Entrada</td>
                     <td class="table_tile">Saida</td>
                     <td class="table_tile">Cracha</td>
-                    <td class="table_tile"></td> <!--//TODO: Editar -->
+                    <td class="table_tile"></td>
                 </tr>
             </thead>
             <tbody>
@@ -120,17 +141,7 @@ $result = mysqli_query($conexao, $sql) or die(mysqli_error($conexao));
                             ?>
                         </td>
                         <td><?= $lista["cracha"] ?></td>
-                        <!-- <td> //TODO: Editar 
-                            <img class="imagem-produto" onclick="editar(<?= $lista['id'] ?>)" src="https://icons.veryicon.com/png/o/application/enterprise-edition/edit-53.png" width="30px" />
-                        </td> -->
-                        <form id="form-editar" method="POST" action="index.php">
-                            <input type="hidden" name="acao" value="editar" />
-                            <input type="hidden" id="bossId" name="idBoss" value="" />
-                        </form>
-                        <form id="form-saida" method="POST" action="index.php">
-                            <input type="hidden" name="acao" value="saida" />
-                            <input type="hidden" id="bossIdExit" name="idBoss" value="" />
-                        </form>
+
                     </tr>
                 <?php
                 }
@@ -139,79 +150,9 @@ $result = mysqli_query($conexao, $sql) or die(mysqli_error($conexao));
         </table>
     </section>
 </body>
-<script lang="javascript">
-    function editar(categoriaId) {
-        document.querySelector("#bossId").value = categoriaId;
-        document.querySelector("#form-editar").submit();
-    }
-
-    function registrarSaida(categoriaId, dados) {
-        document.querySelector("#bossIdExit").value = categoriaId;
-        document.querySelector("#form-saida").submit();
-    }
-</script>
-
 </html>
 
 <?php
-function validarCampos()
-{
-    $erros = "";
-    if (empty($_POST["nome"]))
-        $erros = "Preencha o campo nome";
-    if (empty($_POST["documento"]))
-        $erros = "Preencha o campo documento";
-    if (empty($_POST["destino"]))
-        $erros = "Preencha o campo destino";
-    if (empty($_POST["modelo"]))
-        $erros = "Preencha o campo modelo";
-    if (empty($_POST["placa"]))
-        $erros = "Preencha o campo placa";
-    if (empty($_POST["cracha"]))
-        $erros = "Preencha o campo cracha";
-    return $erros;
-}
-
-function cadastrar()
-{
-    require("database/conexao.php");
-    //FUNÇÃO PARA CADASTRAR OS DADOS DO BOSS
-    $nome = $_POST["nome"];
-    $documento = $_POST["documento"];
-    $destino = $_POST["destino"];
-    $modelo = $_POST["modelo"];
-    $placa = $_POST["placa"];
-    $cracha = $_POST["cracha"];
-    $entrada = date("Y-m-d H:i:s");
-    $sql = "INSERT INTO boss (nome, documento, destino, modelo, placa, cracha, entrada) VALUES ('$nome', '$documento', '$destino', '$modelo', '$placa', '$cracha', '$entrada')";
-    $result = mysqli_query($conexao, $sql) or die(mysqli_error($conexao));
-    mysqli_close($conexao);
-}
-
-function editar()
-{
-    require("database/conexao.php");
-    $id = $_POST["idBoss"];
-    $nome = $_POST["nome"];
-    $documento = $_POST["documento"];
-    $destino = $_POST["destino"];
-    $modelo = $_POST["modelo"];
-    $placa = $_POST["placa"];
-    $cracha = $_POST["cracha"];
-    $sql = "UPDATE boss SET nome = '$nome', documento = '$documento', destino = '$destino', modelo = '$modelo', placa = '$placa', cracha = '$cracha' WHERE id = $id";
-    $result = mysqli_query($conexao, $sql) or die(mysqli_error($conexao));
-    mysqli_close($conexao);
-}
-
-function registrarSaida()
-{
-    require("database/conexao.php");
-    //FUNÇÃO PARA CADASTRAR OS DADOS DO BOSS
-    $saida = date("Y-m-d H:i:s");
-    $sql = "UPDATE boss SET saida = '$saida' WHERE id = " . $_POST["idBoss"];
-    $result = mysqli_query($conexao, $sql) or die(mysqli_error($conexao));
-    mysqli_close($conexao);
-}
 
 
 ?>
